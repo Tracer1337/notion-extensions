@@ -1,12 +1,15 @@
+import { CssBaseline } from '@mui/material'
+import { AppCacheProvider } from '@mui/material-nextjs/v13-pagesRouter'
 import type { AppProps } from 'next/app'
-import { Inter } from 'next/font/google'
 
-const inter = Inter({ subsets: ['latin'] })
+export default function App(props: AppProps) {
+  const { Component, pageProps } = props
 
-export default function App({ Component, pageProps }: AppProps) {
   return (
-    <main className={inter.className}>
-      <Component {...pageProps} />
-    </main>
+    <AppCacheProvider {...props}>
+      <CssBaseline>
+        <Component {...pageProps} />
+      </CssBaseline>
+    </AppCacheProvider>
   )
 }
