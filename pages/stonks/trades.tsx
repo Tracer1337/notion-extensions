@@ -1,4 +1,11 @@
-import { Trade, fetchTrades } from 'lib/notion'
+import {
+  Bilanz,
+  Trade,
+  fetchBilanz,
+  fetchTrades,
+  formulaAuszahlung,
+  formulaRendite,
+} from 'lib/notion'
 import { GetServerSideProps } from 'next'
 import dynamic from 'next/dynamic'
 import 'chart.js/auto'
@@ -10,19 +17,31 @@ const Bar = dynamic(() => import('react-chartjs-2').then((mod) => mod.Bar), {
 
 type TradesPageProps = {
   trades: Trade[]
+  bilanz: Bilanz
 }
 
-export default function TradesPage({ trades }: TradesPageProps) {
+export default function TradesPage({ trades, bilanz }: TradesPageProps) {
   const options: ChartOptions<'bar'> = {
     responsive: true,
     plugins: {
       legend: {
         display: false,
       },
+      tooltip: {
+        callbacks: {
+          label: (item) =>
+            item.formattedValue +
+            (item.dataset.yAxisID === 'profit' ? '€' : '%'),
+          footer: (items) =>
+            !items[0] || items[0].dataset.type === ('line' as any)
+              ? ''
+              : trades[items[0].dataIndex].Position,
+        },
+      },
     },
     scales: {
       profit: {
-        type: 'linear',
+        type: 'logarithmic',
         position: 'left',
         title: {
           display: true,
@@ -33,14 +52,14 @@ export default function TradesPage({ trades }: TradesPageProps) {
         },
       },
       rendite: {
-        type: 'linear',
+        type: 'logarithmic',
         position: 'right',
         title: {
           display: true,
           text: 'Rendite',
         },
         ticks: {
-          callback: (value: any) => `${value * 100}%`,
+          callback: (value: any) => `${value}%`,
         },
       },
     },
@@ -59,6 +78,16 @@ export default function TradesPage({ trades }: TradesPageProps) {
         data: trades.map((trade) => trade.Rendite),
         yAxisID: 'rendite',
       },
+      {
+        data: trades.map((_trade, i) => formulaAuszahlung(bilanz, trades, i)),
+        yAxisID: 'profit',
+        type: 'line' as any,
+      },
+      {
+        data: trades.map((_trade, i) => formulaRendite(bilanz, trades, i)),
+        yAxisID: 'rendite',
+        type: 'line' as any,
+      },
     ],
   }
 
@@ -68,7 +97,7 @@ export default function TradesPage({ trades }: TradesPageProps) {
 export const getServerSideProps: GetServerSideProps<
   TradesPageProps
 > = async () => {
-  const trades = await fetchTrades()
+  const [trades, bilanz] = await Promise.all([fetchTrades(), fetchBilanz()])
 
-  return { props: { trades } }
+  return { props: { trades, bilanz } }
 }
