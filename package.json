@@ -17,6 +17,7 @@
     "@mui/material-nextjs": "^5.15.11",
     "@notionhq/client": "^2.2.15",
     "chart.js": "^4.4.3",
+    "date-fns": "^3.6.0",
     "glob": "^10.4.2",
     "lodash": "^4.17.21",
     "next": "14.2.4",

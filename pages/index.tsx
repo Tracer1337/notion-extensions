@@ -3,9 +3,10 @@ import {
   Card,
   CardActionArea,
   CardContent,
+  CardMedia,
   Container,
-  Typography,
   Grid,
+  Typography,
 } from '@mui/material'
 import { pages } from 'lib/pages'
 import Image from 'next/image'
@@ -25,7 +26,7 @@ export default function Home() {
               href={page.path}
               sx={{ textDecoration: 'none' }}
             >
-              <Card variant="outlined">
+              <Card variant="outlined" sx={{ width: 300 }}>
                 <CardActionArea
                   sx={{
                     '& > img': {
@@ -34,15 +35,20 @@ export default function Home() {
                     },
                   }}
                 >
-                  <Image
-                    src={page.thumbnail_path}
-                    width={100}
-                    height={100}
-                    alt={page.title}
-                  />
+                  <CardMedia sx={{ '& > img': { objectFit: 'cover' } }}>
+                    <Image
+                      src={page.thumbnail_path}
+                      alt={page.title}
+                      width={300}
+                      height={140}
+                    />
+                  </CardMedia>
                   <CardContent>
-                    <Typography variant="h6" sx={{ textAlign: 'center' }}>
+                    <Typography variant="h5" sx={{ opacity: 0.8 }}>
                       {page.title}
+                    </Typography>
+                    <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                      {page.subtitle}
                     </Typography>
                   </CardContent>
                 </CardActionArea>

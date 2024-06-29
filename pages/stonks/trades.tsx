@@ -15,6 +15,7 @@ type TradesPageProps = {
 export default function TradesPage({ trades, bilanz }: TradesPageProps) {
   return <TradesChart trades={trades} bilanz={bilanz} />
 }
+
 export const getServerSideProps: GetServerSideProps<
   TradesPageProps
 > = async () => {
