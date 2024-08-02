@@ -5,20 +5,9 @@ pdfjs.GlobalWorkerOptions.workerSrc =
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.5.136/pdf.worker.min.mjs'
 
 export async function triggerImport() {
-  let files: File[]
+  const files = await importFiles()
 
-  try {
-    const handles: FileSystemFileHandle[] = await window
-      // @ts-ignore
-      .showOpenFilePicker({
-        multiple: true,
-        excludeAcceptAllOption: true,
-        startIn: 'downloads',
-        types: [{ accept: { 'application/pdf': '.pdf' } }],
-      })
-
-    files = await Promise.all(handles.map((handle) => handle.getFile()))
-  } catch {
+  if (files.length === 0) {
     return
   }
 
@@ -42,4 +31,32 @@ async function parseInvoice(
     text: item.str,
     transform: item.transform,
   }))
+}
+
+function importFiles(): Promise<File[]> {
+  return new Promise((resolve) => {
+    const input = document.createElement('input')
+
+    input.type = 'file'
+    input.multiple = true
+    input.accept = 'application/pdf'
+
+    input.addEventListener('change', () => {
+      if (!input.files) {
+        resolve([])
+        return
+      }
+      const files: File[] = []
+      for (let i = 0; i < input.files.length; i++) {
+        files.push(input.files[i])
+      }
+      resolve(files)
+    })
+
+    input.addEventListener('cancel', () => {
+      resolve([])
+    })
+
+    input.click()
+  })
 }
