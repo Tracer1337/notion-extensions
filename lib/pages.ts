@@ -18,4 +18,10 @@ export const pages: Page[] = [
     path: '/stonks/dates',
     thumbnail_path: '/img/thumbnail-dates.png',
   },
+  {
+    title: 'Stonks',
+    subtitle: 'Import',
+    path: '/stonks/import',
+    thumbnail_path: '/img/thumbnail-import.png',
+  },
 ]

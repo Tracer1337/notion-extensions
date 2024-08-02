@@ -43,6 +43,63 @@ export async function fetchTrades(): Promise<Trade[]> {
     )
 }
 
+export async function createTrade(trade: Trade): Promise<boolean> {
+  try {
+    await notion.pages.create({
+      parent: {
+        type: 'database_id',
+        database_id: process.env.NOTION_TRADES_DB_ID ?? '',
+      },
+      properties: {
+        Position: {
+          type: 'title',
+          title: [
+            {
+              type: 'text',
+              text: {
+                content: trade.Position,
+              },
+            },
+          ],
+        },
+        Anteile: {
+          type: 'number',
+          number: trade.Anteile,
+        },
+        Kaufdatum: {
+          type: 'date',
+          date: {
+            start: trade.Kaufdatum,
+            time_zone: 'Europe/Berlin',
+          },
+        },
+        Kaufpreis: {
+          type: 'number',
+          number: parseFloat(trade.Kaufpreis),
+        },
+        Verkaufsdatum: {
+          type: 'date',
+          date: {
+            start: trade.Verkaufsdatum,
+            time_zone: 'Europe/Berlin',
+          },
+        },
+        Verkaufspreis: {
+          type: 'number',
+          number: parseFloat(trade.Verkaufspreis),
+        },
+        Gebühren: {
+          type: 'number',
+          number: trade.Gebühren,
+        },
+      },
+    })
+    return true
+  } catch {
+    return false
+  }
+}
+
 export type Bilanz = {
   Einzahlung: number
 }
